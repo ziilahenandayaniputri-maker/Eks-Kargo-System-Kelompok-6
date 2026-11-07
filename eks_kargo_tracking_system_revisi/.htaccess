@@ -1,0 +1,18 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # 1. Jika request adalah file atau folder yang ada di direktori root, layani langsung
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # 2. Jika request ke aset publik yang ada di folder public/ (assets, uploads, dll)
+    RewriteCond %{DOCUMENT_ROOT}/eks_kargo_tracking_system_revisi/public/$1 -f
+    RewriteRule ^(.*)$ public/$1 [L]
+
+    # 3. Dynamic MVC dispatch ke public/index.php
+    RewriteRule ^$ public/index.php [L]
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ public/index.php?url=$1 [QSA,L]
+</IfModule>
