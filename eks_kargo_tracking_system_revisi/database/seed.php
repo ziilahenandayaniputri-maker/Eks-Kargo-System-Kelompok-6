@@ -11,18 +11,28 @@ use Core\Database;
 
 try {
     $db = Database::getInstance()->getConnection();
+    $hostingConfigFile = dirname(__DIR__) . '/config/database.php';
+    $hostingConfig = is_file($hostingConfigFile) ? require $hostingConfigFile : [];
+    if (!is_array($hostingConfig)) {
+        throw new RuntimeException('Database configuration must return an array.');
+    }
+
+    $adminEmail = $hostingConfig['admin_email'] ?? 'rizqi@kargotrack.id';
+    $adminPassword = $hostingConfig['admin_password'] ?? 'admin123';
 
     // 1. Seed Users (Hanya jika user belum ada, agar tidak boros CPU bcrypt hashing pada setiap request)
-    $userCount = $db->query("SELECT COUNT(*) FROM users WHERE email = 'rizqi@kargotrack.id'")->fetchColumn();
+    $userStmt = $db->prepare('SELECT COUNT(*) FROM users WHERE email = :email');
+    $userStmt->execute([':email' => $adminEmail]);
+    $userCount = $userStmt->fetchColumn();
     if ($userCount == 0) {
-        $passwordHash = password_hash('admin123', PASSWORD_BCRYPT);
+        $passwordHash = password_hash($adminPassword, PASSWORD_BCRYPT);
         $userStmt = $db->prepare("
             INSERT INTO users (nama, email, password, role, cabang, status)
             VALUES (:nama, :email, :password, :role, :cabang, 'Aktif')
         ");
         $userStmt->execute([
-            ':nama' => 'Rizqi',
-            ':email' => 'rizqi@kargotrack.id',
+            ':nama' => $hostingConfig['admin_name'] ?? 'Admin',
+            ':email' => $adminEmail,
             ':password' => $passwordHash,
             ':role' => 'Admin Gudang',
             ':cabang' => 'Cabang Cirebon'

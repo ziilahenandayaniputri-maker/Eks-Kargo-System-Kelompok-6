@@ -25,6 +25,18 @@ class Database
      */
     private function __construct()
     {
+        $configFile = dirname(__DIR__) . '/config/database.php';
+        $config = is_file($configFile) ? require $configFile : [];
+
+        if (!is_array($config)) {
+            throw new \RuntimeException('Database configuration must return an array.');
+        }
+
+        $this->host = (string)($config['host'] ?? getenv('KARGOTRACK_DB_HOST') ?: $this->host);
+        $this->dbName = (string)($config['database'] ?? getenv('KARGOTRACK_DB_NAME') ?: $this->dbName);
+        $this->user = (string)($config['username'] ?? getenv('KARGOTRACK_DB_USER') ?: $this->user);
+        $this->pass = (string)($config['password'] ?? getenv('KARGOTRACK_DB_PASSWORD') ?: $this->pass);
+
         $dsn = "mysql:host={$this->host};dbname={$this->dbName};charset={$this->charset}";
         
         $options = [
@@ -37,15 +49,11 @@ class Database
         try {
             $this->connection = new PDO($dsn, $this->user, $this->pass, $options);
         } catch (PDOException $e) {
-            // Attempt to create database if not exists
-            try {
-                $rootDsn = "mysql:host={$this->host};charset={$this->charset}";
-                $rootPdo = new PDO($rootDsn, $this->user, $this->pass, $options);
-                $rootPdo->exec("CREATE DATABASE IF NOT EXISTS `{$this->dbName}` CHARACTER SET {$this->charset} COLLATE utf8mb4_unicode_ci");
-                $this->connection = new PDO($dsn, $this->user, $this->pass, $options);
-            } catch (PDOException $ex) {
-                die("Koneksi Database Gagal: " . htmlspecialchars($ex->getMessage(), ENT_QUOTES, 'UTF-8'));
-            }
+            throw new \RuntimeException(
+                'Database connection failed. Check the hosting database settings.',
+                0,
+                $e
+            );
         }
     }
 
@@ -81,4 +89,3 @@ class Database
         throw new \Exception("Cannot unserialize singleton");
     }
 }
-

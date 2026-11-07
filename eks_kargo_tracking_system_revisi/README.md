@@ -186,9 +186,18 @@ Lalu buka: `http://localhost:8000/`
 
 ## 🔑 Kredensial Login & Data Uji Coba
 
-- **Email Petugas**: `rizqi@kargotrack.id`
-- **Kata Sandi**: `admin123`
-- **Nama Petugas**: Rizqi (Admin Gudang Cabang Cirebon)
+Untuk instalasi lokal baru, seeder menggunakan akun demo di bawah ini. Jangan gunakan kata sandi demo untuk situs publik.
+
+- **Email Petugas lokal**: `rizqi@kargotrack.id`
+- **Kata Sandi lokal**: `admin123`
+
+### Deploy ke Shared Hosting PHP/MySQL
+
+1. Import `database/hosting_schema.sql` ke database hosting melalui phpMyAdmin.
+2. Salin `config/database.example.php` menjadi `config/database.php`, lalu isi hostname, nama database, username, password database, email admin, dan kata sandi admin yang unik.
+3. Unggah isi folder proyek ini langsung ke `htdocs`, bukan folder `.git`. File `.htaccess` di root membatasi akses web ke direktori kode dan konfigurasi.
+4. Pastikan `uploads/pod` dapat ditulisi oleh PHP. Akses situs untuk pertama kali agar seeder mengisi data awal, termasuk akun admin dari konfigurasi lokal tersebut.
+5. Login dengan email dan kata sandi admin yang telah diisi di konfigurasi. Jangan unggah `config/database.php` ke GitHub dan jangan gunakan kredensial demo untuk situs publik.
 
 ### Sampel Resi & Nomor Uji Coba:
 1. `KT-CRB-261030-0047`:
@@ -205,4 +214,3 @@ Lalu buka: `http://localhost:8000/`
 ---
 
 Dibuat dengan standar kode tinggi, modular, bersih, dan sesuai dengan seluruh spesifikasi studi kasus ekspedisi kargo logistik antar-kota.
-

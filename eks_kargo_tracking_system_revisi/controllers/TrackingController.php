@@ -121,7 +121,7 @@ class TrackingController extends Controller
                 $this->json(['success' => false, 'message' => 'Ukuran file foto maksimal 5 MB.'], 422);
             }
 
-            $uploadDir = dirname(__DIR__) . '/public/uploads/pod/';
+            $uploadDir = dirname(__DIR__) . '/uploads/pod/';
             if (!is_dir($uploadDir)) {
                 if (!mkdir($uploadDir, 0755, true) && !is_dir($uploadDir)) {
                     $this->json(['success' => false, 'message' => 'Folder penyimpanan foto tidak dapat dibuat.'], 500);
